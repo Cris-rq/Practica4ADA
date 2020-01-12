@@ -1,5 +1,7 @@
 package org.ada.va.impl;
 
+import java.util.Arrays;
+
 /**
  * Implementación del algoritmo de las n-reinas con la técnica de vuelta atrás.
  * Tiene dos métodos de entrada a la funcionalidad proporcionados por la clase que implementa:
@@ -15,7 +17,7 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 	 * @param dimension tamaño del tablero y número de reinas a colocar
 	 */
 	public NReinasVueltaAtras(Integer dimension) {
-		super(dimension);
+		super(dimension); 
 	}
 
 	/**
@@ -23,7 +25,18 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 	 * @param etapa etapa para la que queremos calcular la solución.
 	 */
 	public void vueltaAtras(int etapa) {
-		// TODO: implementar el algoritmo que encuentra la primera solución para una etapa concreta
+		if(etapa < this.getDimension()){
+			for(int i = 0; (i < this.getDimension()) && (!this.isExito()); i++){
+				this.solucion[etapa] = i;
+				if(valido(etapa)){
+					if(etapa < this.getDimension() -1){
+						vueltaAtras(etapa + 1);
+					} else {
+						this.setExito(Boolean.TRUE);
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -32,8 +45,13 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 	 * @return si la solución es correcta
 	 */
 	protected Boolean valido(int etapa) { 
-		// TODO: implementar el algoritmo para validar si una posible solución es válida para una etapa concreta
-		return Boolean.FALSE;
+		for(int i = 0; i < etapa; i++){
+			if((this.solucion[i] == this.solucion[etapa]) || 
+			   (valAbs(this.solucion[i] - this.solucion[etapa]) == valAbs(i - etapa))){
+				return Boolean.FALSE;
+			}
+		}
+		return Boolean.TRUE;
 	}
 
 	/**
@@ -42,6 +60,27 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 	 * @param etapa etapa
 	 */
 	public void vaTodas(int etapa) {
-		// TODO: implementar el algoritmo que calcula todas las posibles soluciones para una etapa concreta
+
+		Integer[] auxArr;
+
+		if(etapa < this.getDimension()){ // Las reinas colocadas son menores al número total de reinas por colocar
+			for(int i = 0; i < this.getDimension(); i++){ // Bucle para probar TODOS los posibles estados de una misma posición del vector solución
+				
+				auxArr = Arrays.copyOf(this.getSolucion(), this.getSolucion().length);
+
+				this.getSolucion()[etapa] = i; // Guardamos el POSIBLE estado (falta comprobar su validez)
+				
+				if(this.valido(etapa)){// Si el estado es valido entonces... (quiere decir que ninguna reina ataca a otra)
+					if(etapa < this.getDimension() - 1){ // Si aún me quedan reinas por colocar entonces...
+						vaTodas(etapa+1); // Busco la siguiente combinación considerando las reinas ya colocadas
+					}
+					else { // Si esta era la última reina que debía colocar entonces... (etapa = this.getDimension()-1)
+						this.getSoluciones().addElement(this.getSolucion()); // Guardo la solución encontrada en mi vector de soluciones completas
+					}
+
+					this.setSolucion(auxArr);
+				}
+			}
+		}
 	}
 }
