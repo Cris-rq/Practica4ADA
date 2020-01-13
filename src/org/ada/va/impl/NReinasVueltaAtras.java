@@ -25,14 +25,15 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 	 * @param etapa etapa para la que queremos calcular la solución.
 	 */
 	public void vueltaAtras(int etapa) {
-		if(etapa < this.getDimension()){
-			for(int i = 0; (i < this.getDimension()) && (!this.isExito()); i++){
-				this.solucion[etapa] = i;
-				if(valido(etapa)){
-					if(etapa < this.getDimension() -1){
-						vueltaAtras(etapa + 1);
+		if(etapa < this.getDimension()){ //Las reinas colocadas son menores al número total de reinas por colocar
+			for(int i = 0; (i < this.getDimension()) && (!this.isExito()); i++){ // Bucle para probar TODOS los posibles estados de una misma posición del vector solución 
+																				 //hasta que o los haya probado todos para una posición o hasta que haya encontrado una solución
+				this.solucion[etapa] = i; //anotamos posible estado solución antes de comprobar validez porque valido() hace uso de solucion
+				if(valido(etapa)){ //comprobamos la validez del estado
+					if(etapa < this.getDimension() -1){ //Si aún nos quedan reinas por colocar
+						vueltaAtras(etapa + 1); //Backtracking para siguiente reina
 					} else {
-						this.setExito(Boolean.TRUE);
+						this.setExito(Boolean.TRUE); //Es exito
 					}
 				}
 			}
@@ -45,10 +46,10 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 	 * @return si la solución es correcta
 	 */
 	protected Boolean valido(int etapa) { 
-		for(int i = 0; i < etapa; i++){
-			if((this.solucion[i] == this.solucion[etapa]) || 
-			   (valAbs(this.solucion[i] - this.solucion[etapa]) == valAbs(i - etapa))){
-				return Boolean.FALSE;
+		for(int i = 0; i < etapa; i++){ //Comprobar todas las etapas anteriores que no colapsa ninguna reina
+			if((this.solucion[i] == this.solucion[etapa]) || //filas (por la construcción de la solución, imposible que colapsen en columnas)
+			   (valAbs(this.solucion[i] - this.solucion[etapa]) == valAbs(i - etapa))){ //Diagonales
+				return Boolean.FALSE; //Si lo hacen, no es válido
 			}
 		}
 		return Boolean.TRUE;
@@ -66,8 +67,7 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 		if(etapa < this.getDimension()){ // Las reinas colocadas son menores al número total de reinas por colocar
 			for(int i = 0; i < this.getDimension(); i++){ // Bucle para probar TODOS los posibles estados de una misma posición del vector solución
 				
-				auxArr = Arrays.copyOf(this.getSolucion(), this.getSolucion().length);
-
+				auxArr = Arrays.copyOf(this.getSolucion(), this.getSolucion().length); // Hago una copia del array de soluciones antes de probar un nuevo estado
 				this.getSolucion()[etapa] = i; // Guardamos el POSIBLE estado (falta comprobar su validez)
 				
 				if(this.valido(etapa)){// Si el estado es valido entonces... (quiere decir que ninguna reina ataca a otra)
@@ -78,7 +78,14 @@ public class NReinasVueltaAtras extends NReinasAbstract {
 						this.getSoluciones().addElement(this.getSolucion()); // Guardo la solución encontrada en mi vector de soluciones completas
 					}
 
-					this.setSolucion(auxArr);
+					this.setSolucion(auxArr); /* Es ejecutado para restaurar el valor del array de la solución.
+											   * Esto lo hace cuando termina la llamada a vaTodas(etapa+1) 
+											   * [Ya ha probado todas las posibilidades para la posicion etapa+1 del array]
+											   * Así, vuelve a la etapa anterior válida (anterior posición) y continúa buscando
+											   * nuevas posibilidades desde ahí 
+											   * 
+											   * También se ejecuta cuando se encuentra una solución completa al problema y
+											   * va a probar con el siguiente estado */
 				}
 			}
 		}
