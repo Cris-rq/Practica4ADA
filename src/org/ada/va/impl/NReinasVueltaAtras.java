@@ -8,7 +8,8 @@ import java.util.Arrays;
  * - init: devuelve la primera solución para el problema
  * - initTodas: devuelve todas las soluciones para el problema
  * El modificador verbose nos permite controlar el nivel de salida de la clase
- * @author Unknown
+ * @author Rafael Moret Galán
+ * @author Cristina Espejo Roque
  */
 public class NReinasVueltaAtras extends NReinasAbstract {
 	
